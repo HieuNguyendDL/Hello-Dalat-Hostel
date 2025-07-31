@@ -183,7 +183,28 @@ async def get_guest_info(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text("⚠️ Có lỗi xảy ra, vui lòng thử lại sau!")
         return ConversationHandler.END
 
-# ... (Các hàm khác như cancel_booking_command, update_booking_command, v.v.)
+async def cancel_booking_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Xử lý lệnh /cancel <mã booking> để hủy đặt phòng"""
+    try:
+        args = context.args
+        if not args or len(args) != 1:
+            await update.message.reply_text(
+                "⚠️ Vui lòng nhập đúng định dạng: /cancel <mã_booking>\nVí dụ: /cancel abc123"
+            )
+            return
+        booking_id = args[0]
+        success = cancel_booking(booking_id)
+        if success:
+            await update.message.reply_text(f"✅ Đã hủy booking {booking_id} thành công!")
+        else:
+            await update.message.reply_text(f"⚠️ Booking {booking_id} đã được hủy trước đó hoặc không tồn tại.")
+    except ValueError as e:
+        await update.message.reply_text(f"❌ Lỗi: {str(e)}")
+    except Exception as e:
+        logger.error(f"Lỗi khi hủy booking: {str(e)}")
+        await update.message.reply_text("⚠️ Có lỗi xảy ra, vui lòng thử lại sau!")
+
+# ... (Các hàm khác như update_booking_command, v.v.)
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Xử lý tất cả callback từ inline keyboard"""
