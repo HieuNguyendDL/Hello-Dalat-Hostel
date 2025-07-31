@@ -204,7 +204,34 @@ async def cancel_booking_command(update: Update, context: ContextTypes.DEFAULT_T
         logger.error(f"Lỗi khi hủy booking: {str(e)}")
         await update.message.reply_text("⚠️ Có lỗi xảy ra, vui lòng thử lại sau!")
 
-# ... (Các hàm khác như update_booking_command, v.v.)
+async def update_booking_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Xử lý lệnh /update <mã_booking> <field>:<giá trị> để cập nhật thông tin booking"""
+    try:
+        args = context.args
+        if not args or len(args) < 2:
+            await update.message.reply_text(
+                "⚠️ Vui lòng nhập đúng định dạng: /update <mã_booking> <field>:<giá trị>\nVí dụ: /update abc123 price:2000000"
+            )
+            return
+        booking_id = args[0]
+        updates = {}
+        for item in args[1:]:
+            if ':' in item:
+                field, value = item.split(':', 1)
+                updates[field.strip()] = value.strip()
+        if not updates:
+            await update.message.reply_text("⚠️ Không có trường nào để cập nhật.")
+            return
+        success = update_booking(booking_id, updates)
+        if success:
+            await update.message.reply_text(f"✅ Đã cập nhật booking {booking_id} thành công!")
+        else:
+            await update.message.reply_text(f"⚠️ Không thể cập nhật booking {booking_id}.")
+    except ValueError as e:
+        await update.message.reply_text(f"❌ Lỗi: {str(e)}")
+    except Exception as e:
+        logger.error(f"Lỗi khi cập nhật booking: {str(e)}")
+        await update.message.reply_text("⚠️ Có lỗi xảy ra, vui lòng thử lại sau!")
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Xử lý tất cả callback từ inline keyboard"""
