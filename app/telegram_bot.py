@@ -93,12 +93,21 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Bắt đầu quy trình đặt phòng"""
     user = update.effective_user
-    await update.message.reply_text(
-        f"👋 Xin chào {user.first_name}!\n"
-        "Vui lòng nhập ngày nhận phòng và ngày trả phòng (dd/mm/yyyy):\n"
-        "Ví dụ: 25/12/2023 27/12/2023",
-        reply_markup=ReplyKeyboardRemove()
-    )
+    # Kiểm tra nguồn gọi: message hay callback_query
+    if update.message:
+        await update.message.reply_text(
+            f"👋 Xin chào {user.first_name}!\n"
+            "Vui lòng nhập ngày nhận phòng và ngày trả phòng (dd/mm/yyyy):\n"
+            "Ví dụ: 25/12/2023 27/12/2023",
+            reply_markup=ReplyKeyboardRemove()
+        )
+    elif update.callback_query:
+        await update.callback_query.answer()
+        await update.callback_query.edit_message_text(
+            f"👋 Xin chào {user.first_name}!\n"
+            "Vui lòng nhập ngày nhận phòng và ngày trả phòng (dd/mm/yyyy):\n"
+            "Ví dụ: 25/12/2023 27/12/2023"
+        )
     return GET_BOOKING_DATES
 
 async def get_booking_dates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
