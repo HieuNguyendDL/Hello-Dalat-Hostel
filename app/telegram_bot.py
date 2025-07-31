@@ -332,3 +332,21 @@ async def handle_availability_request(update, context):
             await update.message.reply_text(msg)
         return True
     return False
+
+async def today_checkins(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Xử lý lệnh /today - Hiển thị danh sách check-in hôm nay"""
+    try:
+        from app.firestore import get_today_checkins
+        bookings = get_today_checkins()
+        if not bookings:
+            await update.message.reply_text("⛔ Không có khách nào check-in hôm nay.")
+            return
+        msg = "📋 Danh sách check-in hôm nay:\n"
+        for b in bookings:
+            msg += (
+                f"\n▪ Mã: {b['id']} | Phòng: {b.get('roomId', '')} | Khách: {b.get('guestName', '')} | SĐT: {b.get('phone', '')}"
+            )
+        await update.message.reply_text(msg)
+    except Exception as e:
+        logger.error(f"Lỗi khi lấy danh sách check-in hôm nay: {str(e)}")
+        await update.message.reply_text("⚠️ Có lỗi xảy ra, vui lòng thử lại sau!")
