@@ -350,3 +350,8 @@ async def today_checkins(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     except Exception as e:
         logger.error(f"Lỗi khi lấy danh sách check-in hôm nay: {str(e)}")
         await update.message.reply_text("⚠️ Có lỗi xảy ra, vui lòng thử lại sau!")
+
+async def cancel_booking_conv(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Fallback khi người dùng muốn hủy quy trình đặt phòng"""
+    await update.message.reply_text("Đã hủy quy trình đặt phòng.")
+    return ConversationHandler.END
