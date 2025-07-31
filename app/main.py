@@ -1,9 +1,9 @@
 import os
 import logging
 from telegram.ext import Application
-from app.telegram_bot import setup_handlers
-from app.firestore import init_firestore
-from app.openai_helper import init_openai
+from .telegram_bot import setup_handlers
+from .firestore import init_firestore, check_availability
+from .openai_helper import init_openai
 
 # Cấu hình logging
 logging.basicConfig(

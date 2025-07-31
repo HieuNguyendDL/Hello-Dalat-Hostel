@@ -165,6 +165,28 @@ def create_booking(booking_data: Dict) -> str:
         logger.error(f"Lỗi khi tạo booking: {str(e)}")
         raise
 
+def check_availability(room_id: str, check_in: str, check_out: str) -> bool:
+    """Kiểm tra phòng có trống không"""
+    try:
+        # Validate dates
+        datetime.strptime(check_in, "%Y-%m-%d")
+        datetime.strptime(check_out, "%Y-%m-%d")
+
+        bookings_ref = db.collection("bookings").where(
+            filter=FieldFilter("roomId", "==", room_id)
+        ).where(
+            filter=FieldFilter("checkOut", ">=", check_in)
+        ).where(
+            filter=FieldFilter("checkIn", "<=", check_out)
+        ).where(
+            filter=FieldFilter("status", "in", ["confirmed", "pending"])
+        ).limit(1)
+
+        return not list(bookings_ref.stream())
+    except Exception as e:
+        logger.error(f"Lỗi kiểm tra phòng trống: {str(e)}")
+        raise
+    
 def cancel_booking(booking_id: str) -> bool:
     """Hủy booking và cập nhật trạng thái phòng"""
     @firestore.transactional

@@ -9,7 +9,7 @@ from telegram.ext import (
 from datetime import datetime
 import logging
 from typing import Dict, Optional, List
-from app.firestore import get_available_rooms, create_booking, cancel_booking, update_booking, get_room_availability
+from app.firestore import check_availability, get_available_rooms, create_booking, cancel_booking, update_booking, get_room_availability
 from app.openai_helper import parse_booking_text
 
 # Khởi tạo logger
